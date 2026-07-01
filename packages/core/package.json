@@ -1,0 +1,11 @@
+{
+  "name": "@gene-code/core",
+  "version": "0.0.1",
+  "main": "index.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./index.ts"
+    }
+  }
+}

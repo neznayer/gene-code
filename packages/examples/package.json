@@ -1,0 +1,9 @@
+{
+  "name": "@gene-code/examples",
+  "version": "0.0.1",
+  "main": "index.ts",
+  "type": "module",
+  "dependencies": {
+    "@gene-code/core": "workspace:*"
+  }
+}
