@@ -5,43 +5,48 @@ import type { DiagramModule, Layout, LayoutNode } from "../types";
 export type GeneDiagram = {
   type: "geneDiagram";
   gene: string;
-  length?: number;
-  exons: Exon[];
+  /** Protein length in amino acids. Defines the right end of the backbone. */
+  length: number;
+  domains: Domain[];
   variants: Variant[];
 };
 
-export interface Exon {
+export interface Domain {
+  /** First residue of the domain (amino-acid position, 1-based). */
   start: number;
+  /** Last residue of the domain (amino-acid position, 1-based). */
   end: number;
   label?: string;
 }
 
 export interface Variant {
   label: string;
+  /** Residue number the variant affects (amino-acid position, 1-based). */
   pos: number;
   class: VariantClass;
 }
 
-export type VariantClass = "missense" | "nonsense" | "frameshift" | "splice" | "synonimus";
+export type VariantClass = "missense" | "nonsense" | "frameshift" | "splice" | "synonymous";
 
-const Y_OFFSET_PX = 10;
+const Y_OFFSET_PX = 12;
 const BLOCK_HEIGHT_PX = 10;
+const LOLLIPOP_RADIUS_PX = 3;
 
 const VARIANT_COLORS: Record<VariantClass, string> = {
   missense: "red",
   nonsense: "blue",
   frameshift: "orange",
   splice: "green",
-  synonimus: "gray",
+  synonymous: "gray",
 };
 
-function parseExon(words: string[]): Exon {
+function parseDomain(words: string[]): Domain {
   const [start, end, ...rest] = words;
 
   return {
     start: Number(start),
     end: Number(end),
-    ...(rest ? { label: rest.join(" ") } : {}),
+    ...(rest.length ? { label: rest.join(" ") } : {}),
   };
 }
 
@@ -52,7 +57,7 @@ function parseVariant(words: string[]): Variant {
     throw new Error(`Invalid variant row: ${words.join(" ")}`);
   }
 
-  if (Number.isNaN(pos)) {
+  if (Number.isNaN(Number(pos))) {
     throw new Error(`Invalid variant position: ${pos}`);
   }
 
@@ -80,7 +85,7 @@ function groupVariantsByPos(variants: Variant[]): Record<number, Variant[]> {
 }
 
 export function parse(rows: string[]): GeneDiagram {
-  const diagram = { type: "geneDiagram" } as GeneDiagram;
+  const diagram = { type: "geneDiagram", domains: [], variants: [] } as unknown as GeneDiagram;
 
   if (rows.length === 0) {
     throw new Error("Empty DSL input");
@@ -91,7 +96,6 @@ export function parse(rows: string[]): GeneDiagram {
 
     switch (keyword) {
       case "geneDiagram": {
-        // Parse gene diagram properties
         diagram.type = "geneDiagram";
         break;
       }
@@ -103,22 +107,12 @@ export function parse(rows: string[]): GeneDiagram {
         diagram.gene = rest.join(" ");
         break;
       }
-      case "exon": {
-        if (!diagram.exons) {
-          diagram.exons = [parseExon(rest)];
-        } else {
-          diagram.exons.push(parseExon(rest));
-        }
+      case "domain": {
+        diagram.domains.push(parseDomain(rest));
         break;
       }
       case "variant": {
-        // Parse variant properties
-        if (!diagram.variants) {
-          diagram.variants = [parseVariant(rest)];
-        } else {
-          diagram.variants.push(parseVariant(rest));
-        }
-
+        diagram.variants.push(parseVariant(rest));
         break;
       }
       default: {
@@ -127,31 +121,18 @@ export function parse(rows: string[]): GeneDiagram {
     }
   }
 
+  if (!diagram.length || Number.isNaN(diagram.length)) {
+    throw new Error("geneDiagram requires a `length` (protein length in amino acids)");
+  }
+
   return diagram;
 }
 
 export function layout(ast: GeneDiagram): Layout {
-  const result = [] as LayoutNode[];
+  const nodes: LayoutNode[] = [];
 
-  let xDomain = [0, 0] as [number, number];
-
-  if (ast.length) {
-    xDomain = [0, ast.length];
-  } else {
-    // calculate range from exons and variants
-
-    const min = Math.min(
-      ...ast.exons.map((exon) => exon.start),
-      ...ast.variants.map((variant) => variant.pos),
-    );
-
-    const max = Math.max(
-      ...ast.exons.map((exon) => exon.end),
-      ...ast.variants.map((variant) => variant.pos),
-    );
-
-    xDomain = [min, max];
-  }
+  // Protein space: the axis runs over amino-acid positions 1 … length.
+  const xDomain: [number, number] = [1, ast.length];
 
   const xScale = (x: number) =>
     MARGIN_X + (INNER_WIDTH * (x - xDomain[0])) / (xDomain[1] - xDomain[0]);
@@ -159,88 +140,85 @@ export function layout(ast: GeneDiagram): Layout {
   const variantsByPos = groupVariantsByPos(ast.variants);
 
   const maxVariantsStack = Math.max(
+    1,
     ...Object.values(variantsByPos).map((variants) => variants.length),
   );
 
-  const yScale = (y: number) => MARGIN_Y + BLOCK_HEIGHT_PX + maxVariantsStack * Y_OFFSET_PX - y;
+  // Screen-space y-axis (grows downward). Variants stack up from the backbone,
+  // so the backbone sits below a band tall enough for the deepest stack.
+  const stackHeight = maxVariantsStack * Y_OFFSET_PX;
+  const backboneY = MARGIN_Y + stackHeight;
 
-  result.push({
+  // Backbone: full protein 1 → length.
+  nodes.push({
     type: "line",
-    x1: xScale(0),
-    x2: xScale(xDomain[1]) - xScale(xDomain[0]),
-    y1: yScale(BLOCK_HEIGHT_PX / 2),
-    y2: yScale(BLOCK_HEIGHT_PX / 2),
+    x1: xScale(xDomain[0]),
+    x2: xScale(xDomain[1]),
+    y1: backboneY,
+    y2: backboneY,
   });
 
-  for (const exon of ast.exons) {
-    result.push({
-      type: "group",
-      x: xScale(exon.start),
-      y: yScale(0),
+  // Domains: boxes centered on the backbone.
+  for (const domain of ast.domains) {
+    const x = xScale(domain.start);
+    const width = xScale(domain.end) - xScale(domain.start);
 
+    nodes.push({
+      type: "group",
+      x,
+      y: backboneY,
       children: [
         {
           type: "rect",
           x: 0,
-          y: -BLOCK_HEIGHT_PX,
-          width: xScale(exon.end) - xScale(exon.start),
+          y: -BLOCK_HEIGHT_PX / 2,
+          width,
           height: BLOCK_HEIGHT_PX,
         },
         {
           type: "text",
-          x: (xScale(exon.end) - xScale(exon.start)) / 2,
-          y: yScale(BLOCK_HEIGHT_PX / 2),
-          text: exon.label || "",
+          x: width / 2,
+          y: BLOCK_HEIGHT_PX / 2 + MARGIN_Y - 4,
+          text: domain.label || "",
           anchor: "middle",
-        },
-        {
-          type: "text",
-          x: 0,
-          y: yScale(MARGIN_Y),
-          text: exon.start.toString(),
           baseline: "hanging",
-          anchor: "middle",
-        },
-        {
-          type: "text",
-          x: xScale(exon.end),
-          y: yScale(MARGIN_Y),
-          text: exon.end.toString(),
-          baseline: "hanging",
-          anchor: "middle",
         },
       ],
     });
   }
 
-  for (const [pos, varinats] of Object.entries(variantsByPos)) {
+  // Variants: lollipops rising from the backbone. Same-position variants stack.
+  for (const [pos, variants] of Object.entries(variantsByPos)) {
     const x = xScale(Number(pos));
 
-    for (const [i, v] of varinats.entries()) {
-      result.push({
+    for (const [i, v] of variants.entries()) {
+      const headY = backboneY - (i + 1) * Y_OFFSET_PX;
+
+      nodes.push({
         type: "group",
         x,
-        y: yScale((i + 1) * Y_OFFSET_PX + BLOCK_HEIGHT_PX),
+        y: 0,
         children: [
-          {
-            type: "circle",
-            x: 0,
-            y: 0,
-            color: VARIANT_COLORS[v.class],
-            radius: 3,
-          },
+          // Leader line from the backbone up to this variant's head.
           {
             type: "line",
             x1: 0,
-            y1: 0,
+            y1: backboneY,
             x2: 0,
-            y2: yScale(0) - yScale(BLOCK_HEIGHT_PX),
+            y2: headY,
+          },
+          {
+            type: "circle",
+            x: 0,
+            y: headY,
+            color: VARIANT_COLORS[v.class],
+            radius: LOLLIPOP_RADIUS_PX,
           },
           {
             type: "text",
-            x: 5,
-            y: 4,
-            text: v?.label ?? "",
+            x: LOLLIPOP_RADIUS_PX + 2,
+            y: headY + LOLLIPOP_RADIUS_PX,
+            text: v.label,
           },
         ],
       });
@@ -249,8 +227,8 @@ export function layout(ast: GeneDiagram): Layout {
 
   return {
     width: WIDTH_PX,
-    height: MARGIN_Y * 2 + BLOCK_HEIGHT_PX + maxVariantsStack * Y_OFFSET_PX,
-    nodes: result,
+    height: backboneY + BLOCK_HEIGHT_PX / 2 + MARGIN_Y,
+    nodes,
   };
 }
 

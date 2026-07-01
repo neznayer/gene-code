@@ -4,7 +4,7 @@ const EXAMPLES: Record<string, string> = {
   "Gene — KRAS": `geneDiagram
     gene KRAS
     length 189
-    exon 5 166 GTPase
+    domain 5 166 GTPase
     variant G12D 12 missense
     variant G12V 12 missense
     variant G13D 13 missense

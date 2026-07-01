@@ -5,7 +5,7 @@ import { parse, splitRows } from "..";
 const testText = `geneDiagram
         gene KRAS
         length 189
-        exon 5 166 GTPase
+        domain 5 166 GTPase
         variant G12D 12 missense
         variant G12V 12 missense
         variant G13D 13 missense
@@ -19,7 +19,7 @@ describe("parsing", () => {
       "geneDiagram",
       "gene KRAS",
       "length 189",
-      "exon 5 166 GTPase",
+      "domain 5 166 GTPase",
       "variant G12D 12 missense",
       "variant G12V 12 missense",
       "variant G13D 13 missense",
@@ -37,9 +37,9 @@ describe("parsing", () => {
     const parsed = parse(testText);
     expect(parsed.length).toEqual(189);
   });
-  it("should parse all exons correctly", () => {
+  it("should parse all domains correctly", () => {
     const parsed = parse(testText);
-    expect(parsed.exons).toEqual([
+    expect(parsed.domains).toEqual([
       {
         start: 5,
         end: 166,
