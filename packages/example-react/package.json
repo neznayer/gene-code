@@ -4,6 +4,7 @@
   "main": "index.ts",
   "type": "module",
   "scripts": {
+    "build": "bun build ./index.html --outdir ./dist",
     "dev": "bun --hot ./index.ts"
   },
   "dependencies": {
