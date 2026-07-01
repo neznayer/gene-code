@@ -23,18 +23,34 @@ Below is a \`gene-code\` diagram rendered inline from a fenced code block:
 
 \`\`\`gene-code
 geneDiagram
-    gene KRAS
-    length 189
-    domain 5 166 GTPase
-    domain 167 185 HVR
-    variant G12D 12 missense
-    variant G12V 12 missense
-    variant G12C 12 missense
-    variant G12A 12 missense
-    variant G12S 12 missense
-    variant G12R 12 missense
-    variant Q61H 61 missense
-    variant Q61L 61 missense
+  gene KRAS
+  length 189
+  domain 5 166 GTPase
+  domain 167 185 HVR
+  variant G12D 12 missense
+  variant G12V 12 missense
+  variant G12C 12 missense
+  variant G12A 12 missense
+  variant G12S 12 missense
+  variant G12R 12 missense
+  variant G13D 13 missense
+  variant G13C 13 missense
+  variant V14I 14 missense
+  variant L19F 19 missense
+  variant Q22K 22 missense
+  variant T35fs 35 frameshift
+  variant I36M 36 missense
+  variant E37* 37 nonsense
+  variant A59T 59 missense
+  variant Q61H 61 missense
+  variant Q61L 61 missense
+  variant Q61R 61 missense
+  variant Q61K 61 missense
+  variant E62* 62 nonsense
+  variant K117N 117 missense
+  variant A146T 146 missense
+  variant A146V 146 missense
+  variant A146P 146 missense
 \`\`\`
 
 Regular code blocks are untouched:
