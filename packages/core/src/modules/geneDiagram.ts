@@ -29,6 +29,7 @@ export interface Variant {
 export type VariantClass = "missense" | "nonsense" | "frameshift" | "splice" | "synonymous";
 
 const Y_OFFSET_PX = 12;
+const FIRST_VARIANT_GAP_PX = 15;
 const BLOCK_HEIGHT_PX = 10;
 const LOLLIPOP_RADIUS_PX = 3;
 const ELBOW_RADIUS_PX = 3;
@@ -252,7 +253,7 @@ export function layout(ast: GeneDiagram): Layout {
 
   // Screen-space y-axis (grows downward). Variants stack up from the backbone,
   // so the backbone sits below a band tall enough for the deepest stack.
-  const stackHeight = maxVariantsStack * Y_OFFSET_PX;
+  const stackHeight = FIRST_VARIANT_GAP_PX + maxVariantsStack * Y_OFFSET_PX;
   const backboneY = MARGIN_Y + stackHeight;
 
   // Backbone: full protein 1 → length.
@@ -317,7 +318,7 @@ export function layout(ast: GeneDiagram): Layout {
   // Variants: lollipops rising from the backbone. Labels are packed onto
   // non-overlapping levels (B); near-adjacent heads are dodged horizontally
   // while the stem stays anchored at the true residue (A).
-  const levelY = (level: number) => backboneY - (level + 1) * Y_OFFSET_PX;
+  const levelY = (level: number) => backboneY - FIRST_VARIANT_GAP_PX - (level + 1) * Y_OFFSET_PX;
 
   // Same-residue variants share one stem: a single elbow rising to the topmost
   // head, with the lower heads stacked on its vertical riser. Group by column.
@@ -329,8 +330,7 @@ export function layout(ast: GeneDiagram): Layout {
   }
 
   const domainTopY = backboneY - BLOCK_HEIGHT_PX / 2;
-  const inDomain = (pos: number) =>
-    ast.domains.some((d) => pos >= d.start && pos <= d.end);
+  const inDomain = (pos: number) => ast.domains.some((d) => pos >= d.start && pos <= d.end);
 
   for (const [x, column] of columns) {
     const headX = column[0]!.headX;
