@@ -5,6 +5,7 @@ const EXAMPLES: Record<string, string> = {
     gene KRAS
     length 189
     domain 5 166 GTPase
+    domain 167 185 HVR
     variant G12D 12 missense
     variant G12V 12 missense
     variant G13D 13 missense
