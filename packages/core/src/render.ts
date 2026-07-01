@@ -12,7 +12,7 @@ export function renderNode(node: LayoutNode): string {
     case "line":
       return `<line x1="${node.x1}" x2="${node.x2}" y1="${node.y1}" y2="${node.y2}" stroke="black" />`;
     case "rect":
-      return `<rect x="${node.x}" y="${node.y}" width="${node.width}" height="${node.height}" fill="${node.fill ?? "lightgray"}" stroke="black" />`;
+      return `<rect x="${node.x}" y="${node.y}" width="${node.width}" height="${node.height}" fill="${node.fill ?? "lightgray"}" stroke="${node.stroke ?? "black"}" />`;
     // return `<g transform="translate(${node.x},${node.y})">
     //           <rect x="0" y="0" width="${node.width}" height="${node.height}" fill="lightgray" stroke="black" />
     //           <text x="0" alignment-baseline="hanging" text-anchor="middle" y="10" font-size="10">${node.label.start}</text>
@@ -36,7 +36,7 @@ export function renderNode(node: LayoutNode): string {
 }
 
 export function render(layout: Layout): SVGString {
-  const svg = `<svg width="${layout.width}" height="${layout.height}" xmlns="http://www.w3.org/2000/svg">
+  const svg = `<svg viewBox="0 0 ${layout.width} ${layout.height}" width="100%" style="max-width:${layout.width}px"  xmlns="http://www.w3.org/2000/svg">
     ${layout.nodes.map(renderNode).join("")}
     </svg>`;
 

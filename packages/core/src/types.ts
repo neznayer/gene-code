@@ -45,6 +45,7 @@ type Rect = {
   width: number;
   height: number;
   fill?: string;
+  stroke?: string;
 };
 
 type Line = {

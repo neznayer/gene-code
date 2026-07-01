@@ -1,11 +1,14 @@
 {
-  "name": "@gene-code/remark",
+  "name": "@gene-code/rehype",
   "version": "0.0.1",
   "main": "index.ts",
   "type": "module",
   "dependencies": {
     "@gene-code/core": "workspace:*",
-    "@types/mdast": "^4.0.4",
+    "hast-util-from-html": "^2.0.3",
     "unist-util-visit": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/hast": "^3.0.4"
   }
 }
