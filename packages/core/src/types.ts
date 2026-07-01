@@ -10,7 +10,14 @@ export type Layout = {
   nodes: LayoutNode[];
 };
 
-export type LayoutNode = Line | Rect | Text | Circle | Group;
+export type LayoutNode = Line | Rect | Text | Circle | Path | Group;
+
+type Path = {
+  type: "path";
+  d: string; // SVG path data
+  fill?: string;
+  stroke?: string;
+};
 
 type Circle = {
   type: "circle";

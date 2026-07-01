@@ -23,6 +23,8 @@ export function renderNode(node: LayoutNode): string {
 
     case "circle":
       return `<circle cx="${node.x}" cy="${node.y}" r="${node.radius}" fill="${node.color}" stroke="${node.stroke ?? "none"}" />`;
+    case "path":
+      return `<path d="${node.d}" fill="${node.fill ?? "none"}" stroke="${node.stroke ?? "none"}" />`;
     case "group":
       return `<g transform="translate(${node.x},${node.y})">
         ${node.children.map(renderNode).join("")}

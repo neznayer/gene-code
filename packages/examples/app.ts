@@ -18,7 +18,7 @@ const EXAMPLES: Record<string, string> = {
     node aunt female unaffected unknown gf-gm
     node mom female unaffected carrier
     couple dad mom
-    node kid1 male affected homozygous dad-mom
+    node kid1 male affected unknown dad-mom
     node kid2 female unaffected carrier dad-mom
     node kid3 male unaffected unknown dad-mom`,
 };

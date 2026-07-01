@@ -23,7 +23,7 @@ interface PedigreeNode {
   id: string;
   sex: "male" | "female";
   phenotype: "affected" | "unaffected" | "unknown";
-  genotype: "carrier" | "heterozygous" | "homozygous" | "unknown";
+  genotype: "carrier" | "unknown";
   childOf?: string;
 }
 
@@ -84,12 +84,8 @@ function isPhenotype(value: string | undefined): value is "affected" | "unaffect
   return value === "affected" || value === "unaffected" || value === "unknown";
 }
 
-function isGenotype(
-  value: string | undefined,
-): value is "carrier" | "heterozygous" | "homozygous" | "unknown" {
-  return (
-    value === "carrier" || value === "heterozygous" || value === "homozygous" || value === "unknown"
-  );
+function isGenotype(value: string | undefined): value is "carrier" | "unknown" {
+  return value === "carrier" || value === "unknown";
 }
 
 const ROW_HEIGHT_PX = 60;
@@ -282,31 +278,32 @@ export function layout(diagram: PedigreeDiagram): Layout {
 // A symbol occupies the box [x, x+SYMBOL_PX] x [y, y+SYMBOL_PX]. Both the
 // square and the circle are centered in that box so partners on a row share a
 // centerline and connector lines meet their edges cleanly.
+//
+// Fill conventions:
+//   affected phenotype -> fully shaded
+//   carrier genotype   -> left half shaded (heterozygous, unaffected)
+//   otherwise          -> unshaded outline
 function symbol(n: PedigreeNode, x: number, y: number): LayoutNode {
-  const fill = n.phenotype === "affected" ? "black" : "white";
-  if (n.sex === "male") {
-    return {
-      type: "group",
-      x,
-      y,
-      children: [{ type: "rect", x: 0, y: 0, width: SYMBOL_PX, height: SYMBOL_PX, fill }],
-    };
+  const affected = n.phenotype === "affected";
+  const carrier = !affected && n.genotype === "carrier";
+  const base = affected ? "black" : "white";
+  const r = SYMBOL_PX / 2;
+
+  const children: LayoutNode[] =
+    n.sex === "male"
+      ? [{ type: "rect", x: 0, y: 0, width: SYMBOL_PX, height: SYMBOL_PX, fill: base }]
+      : [{ type: "circle", x: r, y: r, radius: r, color: base, stroke: "black" }];
+
+  if (carrier) {
+    children.push(
+      n.sex === "male"
+        ? { type: "rect", x: 0, y: 0, width: r, height: SYMBOL_PX, fill: "black" }
+        : // left half of the circle: arc from top point to bottom point down the left side
+          { type: "path", d: `M ${r} 0 A ${r} ${r} 0 0 0 ${r} ${SYMBOL_PX} Z`, fill: "black" },
+    );
   }
-  return {
-    type: "group",
-    x,
-    y,
-    children: [
-      {
-        type: "circle",
-        x: SYMBOL_PX / 2,
-        y: SYMBOL_PX / 2,
-        radius: SYMBOL_PX / 2,
-        color: fill,
-        stroke: "black",
-      },
-    ],
-  };
+
+  return { type: "group", x, y, children };
 }
 
 export const pedigreeDiagram: DiagramModule<PedigreeDiagram> = {
