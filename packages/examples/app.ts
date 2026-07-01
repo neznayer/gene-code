@@ -10,17 +10,26 @@ const EXAMPLES: Record<string, string> = {
     variant G13D 13 missense
     variant Q61H 61 missense`,
 
-  "Pedigree — autosomal recessive": `pedigreeDiagram
-    node gf male unaffected unknown
+  // Every implemented feature in one chart:
+  //   sex:       male (square), female (circle)
+  //   phenotype: affected (filled), unaffected (open), unknown (open)
+  //   genotype:  carrier (center dot), noncarrier (no dot), unknown (no dot)
+  //   couples, multi-generation nesting, a married-in founder pulled onto a
+  //   lower row, a childless couple, and a sibship with several children.
+  "Pedigree — all features": `pedigreeDiagram
+    node gf male unaffected noncarrier
     node gm female unaffected carrier
     couple gf gm
+    node uncle male unknown unknown gf-gm
     node dad male unaffected carrier gf-gm
-    node aunt female unaffected unknown gf-gm
     node mom female unaffected carrier
     couple dad mom
-    node kid1 male affected unknown dad-mom
-    node kid2 female unaffected carrier dad-mom
-    node kid3 male unaffected unknown dad-mom`,
+    node childless_a male unaffected noncarrier gf-gm
+    node childless_b female unaffected unknown
+    couple childless_a childless_b
+    node son male affected carrier dad-mom
+    node daughter female unaffected carrier dad-mom
+    node baby male unaffected noncarrier dad-mom`,
 };
 
 document.addEventListener("DOMContentLoaded", main);

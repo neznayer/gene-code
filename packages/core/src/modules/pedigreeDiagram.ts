@@ -23,7 +23,7 @@ interface PedigreeNode {
   id: string;
   sex: "male" | "female";
   phenotype: "affected" | "unaffected" | "unknown";
-  genotype: "carrier" | "unknown";
+  genotype: "carrier" | "noncarrier" | "unknown";
   childOf?: string;
 }
 
@@ -84,8 +84,8 @@ function isPhenotype(value: string | undefined): value is "affected" | "unaffect
   return value === "affected" || value === "unaffected" || value === "unknown";
 }
 
-function isGenotype(value: string | undefined): value is "carrier" | "unknown" {
-  return value === "carrier" || value === "unknown";
+function isGenotype(value: string | undefined): value is "carrier" | "noncarrier" | "unknown" {
+  return value === "carrier" || value === "noncarrier" || value === "unknown";
 }
 
 const ROW_HEIGHT_PX = 60;
@@ -280,12 +280,14 @@ export function layout(diagram: PedigreeDiagram): Layout {
 // centerline and connector lines meet their edges cleanly.
 //
 // Fill conventions:
-//   affected phenotype -> fully shaded
-//   carrier genotype   -> left half shaded (heterozygous, unaffected)
-//   otherwise          -> unshaded outline
+//   affected phenotype -> fully shaded symbol
+//   carrier genotype   -> left half shaded (heterozygote). Shown independently
+//                         of phenotype, so an affected carrier reads as fully
+//                         shaded (the carrier half is subsumed by the full fill).
+//   noncarrier/unknown -> no extra shading
 function symbol(n: PedigreeNode, x: number, y: number): LayoutNode {
   const affected = n.phenotype === "affected";
-  const carrier = !affected && n.genotype === "carrier";
+  const carrier = n.genotype === "carrier";
   const base = affected ? "black" : "white";
   const r = SYMBOL_PX / 2;
 
@@ -294,12 +296,15 @@ function symbol(n: PedigreeNode, x: number, y: number): LayoutNode {
       ? [{ type: "rect", x: 0, y: 0, width: SYMBOL_PX, height: SYMBOL_PX, fill: base }]
       : [{ type: "circle", x: r, y: r, radius: r, color: base, stroke: "black" }];
 
-  if (carrier) {
+  // A fully-shaded (affected) symbol already covers the carrier half, so only
+  // draw the half-fill on unaffected symbols.
+  if (carrier && !affected) {
     children.push(
       n.sex === "male"
         ? { type: "rect", x: 0, y: 0, width: r, height: SYMBOL_PX, fill: "black" }
-        : // left half of the circle: arc from top point to bottom point down the left side
-          { type: "path", d: `M ${r} 0 A ${r} ${r} 0 0 0 ${r} ${SYMBOL_PX} Z`, fill: "black" },
+        : // Left half-disc: semicircle from the top point, down the left side,
+          // to the bottom point (sweep flag 0 bows the arc left), then closed.
+          { type: "path", d: `M ${r} 0 A ${r} ${r} 0 0 0 ${r} ${SYMBOL_PX} Z`, fill: "black", stroke: "black" },
     );
   }
 

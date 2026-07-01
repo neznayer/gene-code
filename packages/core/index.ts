@@ -3,6 +3,27 @@ import { registry } from "./src/registry";
 import { render as renderBase } from "./src/render";
 import type { SVGString } from "./src/types";
 
+export { splitRows };
+
+/**
+ * Parses a DSL string into its diagram AST by dispatching on the first row's
+ * diagram keyword. Throws if the keyword is missing or unknown.
+ */
+export function parse(dsl: string) {
+  const rows = splitRows(dsl);
+  const diagramKeyword = rows[0];
+
+  const module = diagramKeyword
+    ? registry[diagramKeyword as keyof typeof registry]
+    : undefined;
+
+  if (!module) {
+    throw new Error(`Unknown diagram type: ${diagramKeyword ?? "(empty)"}`);
+  }
+
+  return module.parse(rows);
+}
+
 /**
  * Renders a DSL string to an SVG. Returns null for empty, unknown, or
  * malformed input (e.g. a partially-typed diagram) so callers can keep the
