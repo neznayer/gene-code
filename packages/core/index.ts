@@ -3,24 +3,30 @@ import { registry } from "./src/registry";
 import { render as renderBase } from "./src/render";
 import type { SVGString } from "./src/types";
 
-export function render(dsl: string): SVGString {
+/**
+ * Renders a DSL string to an SVG. Returns null for empty, unknown, or
+ * malformed input (e.g. a partially-typed diagram) so callers can keep the
+ * previous output rather than handling thrown errors.
+ */
+export function render(dsl: string): SVGString | null {
   const rows = splitRows(dsl);
   const diagramKeyword = rows[0];
 
   if (!diagramKeyword) {
-    throw new Error("Empty DSL input");
+    return null;
   }
 
   const module = registry[diagramKeyword as keyof typeof registry];
 
   if (!module) {
-    throw new Error(`Unknown diagram type: ${diagramKeyword}`);
+    return null;
   }
 
-  const diagram = module.parse(rows);
-  console.log("diagram", diagram);
-  const layout = module.layout(diagram);
-  const svg = renderBase(layout);
-
-  return svg;
+  try {
+    const diagram = module.parse(rows);
+    const layout = module.layout(diagram);
+    return renderBase(layout);
+  } catch {
+    return null;
+  }
 }

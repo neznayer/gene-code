@@ -18,6 +18,7 @@ type Circle = {
   y: number;
   radius: number;
   color: string;
+  stroke?: string;
 };
 
 type Text = {
@@ -36,6 +37,7 @@ type Rect = {
   y: number;
   width: number;
   height: number;
+  fill?: string;
 };
 
 type Line = {

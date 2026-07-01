@@ -80,7 +80,7 @@ function groupVariantsByPos(variants: Variant[]): Record<number, Variant[]> {
 }
 
 export function parse(rows: string[]): GeneDiagram {
-  const diagram = {} as GeneDiagram;
+  const diagram = { type: "geneDiagram" } as GeneDiagram;
 
   if (rows.length === 0) {
     throw new Error("Empty DSL input");
