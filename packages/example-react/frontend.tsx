@@ -86,6 +86,7 @@ const TABS = Object.keys(SAMPLES);
 function App() {
   const [tab, setTab] = useState(TABS[0]!);
   const [text, setText] = useState(SAMPLES[TABS[0]!]!);
+  const [dark, setDark] = useState(false);
 
   const selectTab = (name: string) => {
     setTab(name);
@@ -93,7 +94,7 @@ function App() {
   };
 
   return (
-    <div className="app">
+    <div className="app" data-theme={dark ? "dark" : "light"}>
       <nav className="tabs">
         {TABS.map((name) => (
           <button
@@ -104,6 +105,14 @@ function App() {
             {name}
           </button>
         ))}
+        <button
+          type="button"
+          className="theme-toggle"
+          onClick={() => setDark((d) => !d)}
+          aria-pressed={dark}
+        >
+          {dark ? "☀ Light" : "☾ Dark"}
+        </button>
       </nav>
       <main>
         <textarea value={text} onChange={(e) => setText(e.target.value)} />
