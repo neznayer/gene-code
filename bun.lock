@@ -15,7 +15,7 @@
     },
     "packages/core": {
       "name": "@gene-code/core",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "devDependencies": {
         "typescript": "^5",
       },
@@ -40,7 +40,7 @@
     },
     "packages/rehype": {
       "name": "@gene-code/rehype",
-      "version": "0.0.6",
+      "version": "0.0.8",
       "dependencies": {
         "@gene-code/core": "workspace:*",
         "hast-util-from-html": "^2.0.3",
