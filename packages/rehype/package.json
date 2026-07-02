@@ -32,9 +32,7 @@
   "sideEffects": false,
   "scripts": {
     "build": "bun build ./index.ts --outdir dist --target node --format esm --external @gene-code/core --external hast-util-from-html --external unist-util-visit --external hast && tsc -p tsconfig.build.json",
-    "prepublishOnly": "bun run build",
-    "prepack": "bun ../../scripts/workspace-protocol.ts pin",
-    "postpack": "bun ../../scripts/workspace-protocol.ts restore"
+    "prepublishOnly": "bun run build"
   },
   "dependencies": {
     "@gene-code/core": "workspace:*",
