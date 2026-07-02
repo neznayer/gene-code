@@ -1,5 +1,15 @@
 # @gene-code/rehype
 
+## 0.0.9
+
+### Patch Changes
+
+- [#7](https://github.com/neznayer/gene-code/pull/7) [`8fd6043`](https://github.com/neznayer/gene-code/commit/8fd60430e58fb5f124f971457826e63f761da985) Thanks [@neznayer](https://github.com/neznayer)! - Publish a concrete `@gene-code/core` version range instead of the internal
+  `workspace:*` protocol, which had leaked into published tarballs and made the
+  package impossible to install from npm. The `workspace:` protocol is now
+  rewritten to `^<version>` as a release step, so source manifests keep
+  `workspace:*` for local development.
+
 ## 0.0.8
 
 ### Patch Changes
