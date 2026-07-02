@@ -6,7 +6,7 @@ This is a rehype plugin that enables the mermaid-like diagram code visualization
 
 Just use `gene-code` as lang parameter on a code block, followed by diagram description:
 
-````
+````markdown
 ```gene-code
 lollipopDiagram
     gene KRAS
@@ -25,6 +25,7 @@ lollipopDiagram
     variant L19F 19 missense
     variant Q22K 22 missense
     variant T35fs 35 frameshift
+```
 ````
 
 Currently supports two types of diagrams:
@@ -37,21 +38,21 @@ Currently supports two types of diagrams:
 The syntax:
 
 ```
-lollipopDiagram <-- diagram type
-    gene KRAS <-- label of the gene
-    length 189 <-- length
-    domain 5 166 GTPase <-- protein domain start, end and label
+lollipopDiagram               <-- diagram type
+    gene KRAS                 <-- label of the gene
+    length 189                <-- length
+    domain 5 166 GTPase       <-- protein domain start, end and label
     domain 167 185 HVR
-    variant G12D 12 missense <-- variant label, pos ans class
+    variant G12D 12 missense  <-- variant label, pos ans class
 ```
 
 ## Pedigree diagram: `pedigreeDiagram`
 
 ```
 pedigreeDiagram
-    node gf male unaffected noncarrier  <-- node/individual's ID, sex, phenotype, genotype
+    node gf male unaffected noncarrier        <-- node/individual's ID, sex, phenotype, genotype
     node gm female unaffected carrier
-    couple gf gm                        <-- parents node IDs
+    couple gf gm                              <-- parents node IDs
     node uncle male unknown unknown gf-gm
     node dad male unaffected carrier gf-gm
     node mom female unaffected carrier
