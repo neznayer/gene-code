@@ -1,5 +1,11 @@
 # @gene-code/core
 
+## 0.1.0
+
+### Minor Changes
+
+- [`6859b69`](https://github.com/neznayer/gene-code/commit/6859b69a6bf9d579a7cff8596829f67cf43625e1) Thanks [@neznayer](https://github.com/neznayer)! - Added theming to be able to adjust the theme
+
 ## 0.0.3
 
 ### Patch Changes

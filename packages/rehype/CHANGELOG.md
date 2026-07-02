@@ -1,5 +1,12 @@
 # @gene-code/rehype
 
+## 0.0.6
+
+### Patch Changes
+
+- Updated dependencies [[`6859b69`](https://github.com/neznayer/gene-code/commit/6859b69a6bf9d579a7cff8596829f67cf43625e1)]:
+  - @gene-code/core@0.1.0
+
 ## 0.0.5
 
 ### Patch Changes
