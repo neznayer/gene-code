@@ -40,6 +40,8 @@ const FONT_SIZE_PX = 10;
 // Gap from the backbone down to the top (hanging baseline) of a domain label.
 const DOMAIN_LABEL_GAP_PX = BLOCK_HEIGHT_PX / 2 + MARGIN_Y - 4;
 
+// row height of the gene label
+const GENE_LABEL_HEIGHT_PX = FONT_SIZE_PX * 1.5;
 /**
  * Orthogonal stem from the backbone anchor `(x, y0)` up to the head `(headX, y1)`
  * (`y1 < y0`). Runs vertical → horizontal → vertical with rounded elbows so the
@@ -177,7 +179,11 @@ function packVariants(variants: Variant[], xScale: (x: number) => number): Place
 }
 
 export function parse(rows: string[]): LollipopDiagram {
-  const diagram = { type: "lollipopDiagram", domains: [], variants: [] } as unknown as LollipopDiagram;
+  const diagram = {
+    type: "lollipopDiagram",
+    domains: [],
+    variants: [],
+  } as unknown as LollipopDiagram;
 
   if (rows.length === 0) {
     throw new Error("Empty DSL input");
@@ -236,7 +242,19 @@ export function layout(ast: LollipopDiagram): Layout {
   // Screen-space y-axis (grows downward). Variants stack up from the backbone,
   // so the backbone sits below a band tall enough for the deepest stack.
   const stackHeight = FIRST_VARIANT_GAP_PX + maxVariantsStack * Y_OFFSET_PX;
-  const backboneY = MARGIN_Y + stackHeight;
+
+  const backboneY = MARGIN_Y + stackHeight + (ast.gene ? GENE_LABEL_HEIGHT_PX : 0);
+
+  if (ast.gene) {
+    nodes.push({
+      type: "text",
+      x: MARGIN_X,
+      y: MARGIN_Y,
+      anchor: "start",
+      baseline: "hanging",
+      text: ast.gene,
+    });
+  }
 
   // Backbone: full protein 1 → length.
   nodes.push({
@@ -356,9 +374,6 @@ export function layout(ast: LollipopDiagram): Layout {
     }
   }
 
-  // Reach the bottom of the lowest content below the backbone: the axis
-  // endpoints (and domain labels) share one baseline below the backbone —
-  // a hanging baseline plus a full line-height of glyphs. Add a bottom margin.
   const belowBackbone = DOMAIN_LABEL_GAP_PX + FONT_SIZE_PX;
 
   return {

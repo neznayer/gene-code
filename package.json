@@ -17,6 +17,8 @@
   "scripts": {
     "changeset": "changeset",
     "version": "changeset version",
-    "release": "changeset publish"
+    "release": "changeset publish",
+    "build:core": "bun --filter=@gene-code/core run build ",
+    "build:rehype": "bun --filter=@gene-code/rehype run build"
   }
 }
