@@ -30,6 +30,11 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
+      # example-react imports @gene-code/rehype, whose exports point at
+      # dist/index.js. dist/ is not committed, so build the library deps first.
+      - name: Build library dependencies
+        run: bun --filter @gene-code/core --filter @gene-code/rehype build
+
       - name: Build example-react
         run: bun --filter @gene-code/example-react build
 
