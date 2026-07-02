@@ -97,7 +97,7 @@ export function layout(diagram: PedigreeDiagram): Layout {
   const nodes = [] as LayoutNode[];
 
   const byId = new Map(diagram.nodes.map((n) => [n.id, n]));
-  
+
   const coupleById = new Map(diagram.couples.map((c) => [coupleId(c.id1, c.id2), c]));
 
   // 1. Raw generation: a node's generation is one below its deeper parent.
@@ -206,10 +206,25 @@ export function layout(diagram: PedigreeDiagram): Layout {
       placeCouple(c);
     }
   }
+
   for (const n of diagram.nodes) if (!placed.has(n.id)) placeNode(n.id);
 
+  // Center the whole tree horizontally within the canvas. The placement cursor
+  // only grows as wide as the node count needs, so content otherwise hugs the
+  // left. When the tree is wider than WIDTH_PX the canvas grows to fit it (see
+  // the returned width below) rather than clipping, so centering is a no-op there.
+  const nodeXs = diagram.nodes.map((n) => x.get(n.id) ?? MARGIN_X);
+  const minX = Math.min(...nodeXs);
+  const maxX = Math.max(...nodeXs) + SYMBOL_PX; // node box right edge
+  const contentWidth = maxX - minX;
+  const canvasWidth = Math.max(WIDTH_PX, contentWidth + MARGIN_X * 2);
+  const offsetX = (canvasWidth - contentWidth) / 2 - minX;
+  for (const n of diagram.nodes) {
+    x.set(n.id, (x.get(n.id) ?? MARGIN_X) + offsetX);
+  }
+
   const pos = new Map<string, { x: number; y: number }>();
-  
+
   for (const n of diagram.nodes) {
     pos.set(n.id, {
       x: x.get(n.id) ?? MARGIN_X,
@@ -264,13 +279,19 @@ export function layout(diagram: PedigreeDiagram): Layout {
     // short drop from the bar to each child's top
     for (const kid of kids) {
       const k = pos.get(kid)!;
-      nodes.push({ type: "line", x1: k.x + SYMBOL_PX / 2, y1: barY, x2: k.x + SYMBOL_PX / 2, y2: k.y });
+      nodes.push({
+        type: "line",
+        x1: k.x + SYMBOL_PX / 2,
+        y1: barY,
+        x2: k.x + SYMBOL_PX / 2,
+        y2: k.y,
+      });
     }
   }
 
   const maxRow = Math.max(0, ...row.values());
   return {
-    width: WIDTH_PX,
+    width: canvasWidth,
     height: MARGIN_Y * 2 + maxRow * ROW_HEIGHT_PX + SYMBOL_PX,
     nodes,
   };
@@ -298,7 +319,17 @@ function symbol(n: PedigreeNode, x: number, y: number): LayoutNode {
 
   const children: LayoutNode[] =
     n.sex === "male"
-      ? [{ type: "rect", x: 0, y: 0, width: SYMBOL_PX, height: SYMBOL_PX, fill: base, stroke: theme.ink }]
+      ? [
+          {
+            type: "rect",
+            x: 0,
+            y: 0,
+            width: SYMBOL_PX,
+            height: SYMBOL_PX,
+            fill: base,
+            stroke: theme.ink,
+          },
+        ]
       : [{ type: "circle", x: r, y: r, radius: r, color: base, stroke: theme.ink }];
 
   // A fully-shaded (affected) symbol already covers the carrier half, so only
@@ -309,7 +340,12 @@ function symbol(n: PedigreeNode, x: number, y: number): LayoutNode {
         ? { type: "rect", x: 0, y: 0, width: r, height: SYMBOL_PX, fill: theme.ink }
         : // Left half-disc: semicircle from the top point, down the left side,
           // to the bottom point (sweep flag 0 bows the arc left), then closed.
-          { type: "path", d: `M ${r} 0 A ${r} ${r} 0 0 0 ${r} ${SYMBOL_PX} Z`, fill: theme.ink, stroke: theme.ink },
+          {
+            type: "path",
+            d: `M ${r} 0 A ${r} ${r} 0 0 0 ${r} ${SYMBOL_PX} Z`,
+            fill: theme.ink,
+            stroke: theme.ink,
+          },
     );
   }
 
