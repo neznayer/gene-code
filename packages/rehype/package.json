@@ -1,6 +1,6 @@
 {
   "name": "@gene-code/rehype",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Rehype plugin that renders gene-code DSL code blocks into SVG diagrams.",
   "license": "MIT",
   "repository": {
