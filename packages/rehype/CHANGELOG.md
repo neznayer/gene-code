@@ -1,5 +1,15 @@
 # @gene-code/rehype
 
+## 0.0.7
+
+### Patch Changes
+
+- [#4](https://github.com/neznayer/gene-code/pull/4) [`7d0350b`](https://github.com/neznayer/gene-code/commit/7d0350bdc841fcb000a64ac518fb9c586ae91f04) Thanks [@neznayer](https://github.com/neznayer)! - Fix the published package shipping an unresolvable `"@gene-code/core":
+"workspace:*"` dependency. The `workspace:` protocol is now rewritten to the
+  concrete core version (`^x.y.z`) at pack time, so `@gene-code/rehype` installs
+  correctly from npm while the source manifest keeps `workspace:*` for local
+  development.
+
 ## 0.0.6
 
 ### Patch Changes
