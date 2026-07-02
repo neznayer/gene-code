@@ -7,6 +7,6 @@
     "outDir": "dist",
     "rootDir": "."
   },
-  "include": ["index.ts"],
+  "include": ["index.ts", "build-types.d.ts"],
   "exclude": ["dist"]
 }
