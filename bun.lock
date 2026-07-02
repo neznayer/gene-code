@@ -14,6 +14,9 @@
     "packages/core": {
       "name": "@gene-code/core",
       "version": "0.0.1",
+      "devDependencies": {
+        "typescript": "^5",
+      },
     },
     "packages/example-react": {
       "name": "@gene-code/example-react",

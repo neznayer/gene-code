@@ -40,12 +40,3 @@ article td {
   border: 1px solid #ddd;
   padding: 0.35rem 0.6rem;
 }
-
-figure.gene-code {
-  margin: 1rem 0;
-}
-
-figure.gene-code svg {
-  max-width: 100%;
-  height: auto;
-}
