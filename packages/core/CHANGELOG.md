@@ -1,5 +1,12 @@
 # @gene-code/core
 
+## 0.2.0
+
+### Minor Changes
+
+- [`e0f666a`](https://github.com/neznayer/gene-code/commit/e0f666aed0d8df0bbcc62dcd4292307a7b75e9ef) Thanks [@neznayer](https://github.com/neznayer)! - - Fix pedigree diagram - center & scale.
+  - Add gene label to lollipop diagram.
+
 ## 0.1.0
 
 ### Minor Changes
