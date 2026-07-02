@@ -1,5 +1,6 @@
 import { tokenize } from "../dsl";
 import { INNER_WIDTH, MARGIN_X, MARGIN_Y, WIDTH_PX } from "../render";
+import { theme } from "../theme";
 import type { DiagramModule, Layout, LayoutNode } from "../types";
 
 export type LollipopDiagram = {
@@ -68,25 +69,6 @@ function stemPath(x: number, y0: number, headX: number, y1: number): string {
     `L ${headX} ${y1}`,
   ].join(" ");
 }
-
-// Muted, harmonious palette (desaturated ~500-level tones) instead of the
-// harsh CSS primaries. Hue semantics kept: warm = damaging, cool = benign.
-const VARIANT_COLORS: Record<VariantClass, string> = {
-  missense: "#d1495b", // dusty rose-red — the common damaging class
-  nonsense: "#5b7c99", // slate blue
-  frameshift: "#e0955b", // muted amber
-  splice: "#5a9367", // sage green
-  synonymous: "#9a9a9a", // neutral gray — silent
-};
-
-// Domain box fill — soft warm gray with a slightly darker outline.
-const DOMAIN_FILL = "#e4e0d8";
-const DOMAIN_STROKE = "#8c8577";
-
-// Stems and lollipop-head ring — soft charcoal instead of pure black; the
-// white-ish ring lets stacked heads read as separate discs.
-const STEM_COLOR = "#5c5c5c";
-const HEAD_RING = "#fbfbfb";
 
 function parseDomain(words: string[]): Domain {
   const [start, end, ...rest] = words;
@@ -300,8 +282,8 @@ export function layout(ast: LollipopDiagram): Layout {
           y: -BLOCK_HEIGHT_PX / 2,
           width,
           height: BLOCK_HEIGHT_PX,
-          fill: DOMAIN_FILL,
-          stroke: DOMAIN_STROKE,
+          fill: theme.domainFill,
+          stroke: theme.domainStroke,
         },
         {
           type: "text",
@@ -344,7 +326,7 @@ export function layout(ast: LollipopDiagram): Layout {
     nodes.push({
       type: "path",
       d: stemPath(x, anchorY, headX, levelY(topLevel)),
-      stroke: STEM_COLOR,
+      stroke: theme.stem,
     });
 
     for (const { variant, level } of column) {
@@ -359,9 +341,9 @@ export function layout(ast: LollipopDiagram): Layout {
             type: "circle",
             x: headX,
             y: headY,
-            color: VARIANT_COLORS[variant.class],
+            color: theme.variant[variant.class],
             radius: LOLLIPOP_RADIUS_PX,
-            stroke: HEAD_RING,
+            stroke: theme.headRing,
           },
           {
             type: "text",

@@ -1,3 +1,4 @@
+import { theme } from "./theme";
 import type { Layout, LayoutNode, SVGString } from "./types";
 
 export const WIDTH_PX = 800;
@@ -10,12 +11,12 @@ export const INNER_WIDTH = WIDTH_PX - MARGIN_X * 2;
 export function renderNode(node: LayoutNode): string {
   switch (node.type) {
     case "line":
-      return `<line x1="${node.x1}" x2="${node.x2}" y1="${node.y1}" y2="${node.y2}" stroke="black" />`;
+      return `<line x1="${node.x1}" x2="${node.x2}" y1="${node.y1}" y2="${node.y2}" stroke="${theme.ink}" />`;
     case "rect":
-      return `<rect x="${node.x}" y="${node.y}" width="${node.width}" height="${node.height}" fill="${node.fill ?? "lightgray"}" stroke="${node.stroke ?? "black"}" />`;
+      return `<rect x="${node.x}" y="${node.y}" width="${node.width}" height="${node.height}" fill="${node.fill ?? theme.surface}" stroke="${node.stroke ?? theme.ink}" />`;
 
     case "text":
-      return `<text x="${node.x}" y="${node.y}" text-anchor="${node.anchor}" alignment-baseline="${node.baseline}" font-size="10">${node.text}</text>`;
+      return `<text x="${node.x}" y="${node.y}" text-anchor="${node.anchor}" alignment-baseline="${node.baseline}" font-size="10" fill="${theme.ink}">${node.text}</text>`;
 
     case "circle":
       return `<circle cx="${node.x}" cy="${node.y}" r="${node.radius}" fill="${node.color}" stroke="${node.stroke ?? "none"}" />`;

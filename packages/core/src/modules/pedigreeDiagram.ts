@@ -1,5 +1,6 @@
 import { tokenize } from "../dsl";
 import { MARGIN_X, MARGIN_Y, WIDTH_PX } from "../render";
+import { theme } from "../theme";
 import type { DiagramModule, Layout, LayoutNode } from "../types";
 
 export interface PedigreeDiagram {
@@ -288,23 +289,27 @@ export function layout(diagram: PedigreeDiagram): Layout {
 function symbol(n: PedigreeNode, x: number, y: number): LayoutNode {
   const affected = n.phenotype === "affected";
   const carrier = n.genotype === "carrier";
-  const base = affected ? "black" : "white";
+  // "Filled = affected, open = unaffected" is a domain convention, so the two
+  // must stay high-contrast under any theme. Map affected -> foreground ink and
+  // unaffected -> surface (see ../theme.ts); the outline is always ink so an
+  // open symbol reads as a ring rather than vanishing into the background.
+  const base = affected ? theme.ink : theme.surface;
   const r = SYMBOL_PX / 2;
 
   const children: LayoutNode[] =
     n.sex === "male"
-      ? [{ type: "rect", x: 0, y: 0, width: SYMBOL_PX, height: SYMBOL_PX, fill: base }]
-      : [{ type: "circle", x: r, y: r, radius: r, color: base, stroke: "black" }];
+      ? [{ type: "rect", x: 0, y: 0, width: SYMBOL_PX, height: SYMBOL_PX, fill: base, stroke: theme.ink }]
+      : [{ type: "circle", x: r, y: r, radius: r, color: base, stroke: theme.ink }];
 
   // A fully-shaded (affected) symbol already covers the carrier half, so only
   // draw the half-fill on unaffected symbols.
   if (carrier && !affected) {
     children.push(
       n.sex === "male"
-        ? { type: "rect", x: 0, y: 0, width: r, height: SYMBOL_PX, fill: "black" }
+        ? { type: "rect", x: 0, y: 0, width: r, height: SYMBOL_PX, fill: theme.ink }
         : // Left half-disc: semicircle from the top point, down the left side,
           // to the bottom point (sweep flag 0 bows the arc left), then closed.
-          { type: "path", d: `M ${r} 0 A ${r} ${r} 0 0 0 ${r} ${SYMBOL_PX} Z`, fill: "black", stroke: "black" },
+          { type: "path", d: `M ${r} 0 A ${r} ${r} 0 0 0 ${r} ${SYMBOL_PX} Z`, fill: theme.ink, stroke: theme.ink },
     );
   }
 
