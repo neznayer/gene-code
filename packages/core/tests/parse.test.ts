@@ -2,7 +2,7 @@ import { describe, expect, it } from "bun:test";
 
 import { parse, splitRows } from "..";
 
-const testText = `geneDiagram
+const testText = `lollipopDiagram
         gene KRAS
         length 189
         domain 5 166 GTPase
@@ -16,7 +16,7 @@ describe("parsing", () => {
     const split = splitRows(testText);
 
     expect(split).toEqual([
-      "geneDiagram",
+      "lollipopDiagram",
       "gene KRAS",
       "length 189",
       "domain 5 166 GTPase",
@@ -30,7 +30,7 @@ describe("parsing", () => {
   it("should parse diagramType", () => {
     const parsed = parse(testText);
 
-    expect(parsed.type).toEqual("geneDiagram");
+    expect(parsed.type).toEqual("lollipopDiagram");
   });
 
   it("should parse length if present", () => {

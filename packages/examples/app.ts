@@ -1,7 +1,7 @@
 import { render } from "@gene-code/core";
 
 const EXAMPLES: Record<string, string> = {
-  "Gene — KRAS": `geneDiagram
+  "Gene — KRAS": `lollipopDiagram
     gene KRAS
     length 189
     domain 5 166 GTPase

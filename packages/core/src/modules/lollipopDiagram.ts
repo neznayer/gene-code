@@ -2,8 +2,8 @@ import { tokenize } from "../dsl";
 import { INNER_WIDTH, MARGIN_X, MARGIN_Y, WIDTH_PX } from "../render";
 import type { DiagramModule, Layout, LayoutNode } from "../types";
 
-export type GeneDiagram = {
-  type: "geneDiagram";
+export type LollipopDiagram = {
+  type: "lollipopDiagram";
   gene: string;
   /** Protein length in amino acids. Defines the right end of the backbone. */
   length: number;
@@ -194,8 +194,8 @@ function packVariants(variants: Variant[], xScale: (x: number) => number): Place
   return placed;
 }
 
-export function parse(rows: string[]): GeneDiagram {
-  const diagram = { type: "geneDiagram", domains: [], variants: [] } as unknown as GeneDiagram;
+export function parse(rows: string[]): LollipopDiagram {
+  const diagram = { type: "lollipopDiagram", domains: [], variants: [] } as unknown as LollipopDiagram;
 
   if (rows.length === 0) {
     throw new Error("Empty DSL input");
@@ -205,8 +205,8 @@ export function parse(rows: string[]): GeneDiagram {
     const [keyword, ...rest] = tokenize(row);
 
     switch (keyword) {
-      case "geneDiagram": {
-        diagram.type = "geneDiagram";
+      case "lollipopDiagram": {
+        diagram.type = "lollipopDiagram";
         break;
       }
       case "length": {
@@ -232,13 +232,13 @@ export function parse(rows: string[]): GeneDiagram {
   }
 
   if (!diagram.length || Number.isNaN(diagram.length)) {
-    throw new Error("geneDiagram requires a `length` (protein length in amino acids)");
+    throw new Error("lollipopDiagram requires a `length` (protein length in amino acids)");
   }
 
   return diagram;
 }
 
-export function layout(ast: GeneDiagram): Layout {
+export function layout(ast: LollipopDiagram): Layout {
   const nodes: LayoutNode[] = [];
 
   // Protein space: the axis runs over amino-acid positions 1 … length.
@@ -386,8 +386,8 @@ export function layout(ast: GeneDiagram): Layout {
   };
 }
 
-export const geneDiagram: DiagramModule<GeneDiagram> = {
-  keyword: "geneDiagram",
+export const lollipopDiagram: DiagramModule<LollipopDiagram> = {
+  keyword: "lollipopDiagram",
   parse,
   layout,
 };

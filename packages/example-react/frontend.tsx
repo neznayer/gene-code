@@ -22,7 +22,7 @@ at codon 12.
 Below is a \`gene-code\` diagram rendered inline from a fenced code block:
 
 \`\`\`gene-code
-geneDiagram
+lollipopDiagram
   gene KRAS
   length 189
   domain 5 166 GTPase

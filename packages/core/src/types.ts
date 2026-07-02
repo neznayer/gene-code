@@ -1,6 +1,6 @@
-import type { GeneDiagram } from "./modules/geneDiagram";
+import type { LollipopDiagram } from "./modules/lollipopDiagram";
 
-export type Diagram = GeneDiagram;
+export type Diagram = LollipopDiagram;
 
 export type SVGString = string;
 
@@ -64,7 +64,7 @@ type Group = {
 };
 
 export interface DiagramModule<AST> {
-  keyword: string; // "geneDiagram"
+  keyword: string; // "lollipopDiagram"
   parse(rows: string[]): AST;
   layout(ast: AST): Layout; // emits shared LayoutNode[]
 }

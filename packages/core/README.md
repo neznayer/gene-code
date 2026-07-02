@@ -1,7 +1,7 @@
 # DSL
 
 ```
-geneDiagram
+lollipopDiagram
   gene <NAME>
   length <N>              # total track length in coordinate units; optional (else inferred from max position)
   exon <start> <end> [label]
@@ -25,7 +25,7 @@ class | color | meaning |
 ## Real worls examples
 
 ```
-geneDiagram
+lollipopDiagram
   gene TP53
   length 393
   exon 94 312 DNA-binding

@@ -8,7 +8,7 @@ Just use `gene-code` as lang parameter on a code block, followed by diagram desc
 
 ````
 ```gene-code
-geneDiagram
+lollipopDiagram
     gene KRAS
     length 189
     domain 5 166 GTPase
@@ -29,15 +29,15 @@ geneDiagram
 
 Currently supports two types of diagrams:
 
-- Lollipop variants diagram: `geneDiagram`
+- Lollipop variants diagram: `lollipopDiagram`
 - Pedigree diagram: `pedigreeDiagram`
 
-## Lollipop variants diagram: `geneDiagram`
+## Lollipop variants diagram: `lollipopDiagram`
 
 The syntax:
 
 ```
-geneDiagram <-- diagram type
+lollipopDiagram <-- diagram type
     gene KRAS <-- label of the gene
     length 189 <-- length
     domain 5 166 GTPase <-- protein domain start, end and label
