@@ -1,7 +1,3 @@
-import type { LollipopDiagram } from "./modules/lollipopDiagram";
-
-export type Diagram = LollipopDiagram;
-
 export type SVGString = string;
 
 export type Layout = {
