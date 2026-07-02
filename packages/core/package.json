@@ -1,6 +1,6 @@
 {
   "name": "@gene-code/core",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Core DSL parser and SVG renderer for gene-code diagrams.",
   "license": "MIT",
   "repository": {
